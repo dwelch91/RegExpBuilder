@@ -25,8 +25,8 @@ main() {
   test("eitherLike orLike", () {
     var regex = new RegExpBuilder()
       .startOfLine()
-      .eitherLike(new RegExpBuilder().exactly(1).of("p"))
-      .orLike(new RegExpBuilder().exactly(2).of("q"))
+      .either(new RegExpBuilder().exactly(1).of("p"))
+      .or(new RegExpBuilder().exactly(2).of("q"))
       .endOfLine()
       .getRegExp();
     
@@ -38,9 +38,9 @@ main() {
   
   test("orLike chain", () {
     var regex = new RegExpBuilder()
-      .eitherLike(new RegExpBuilder().exactly(1).of("p"))
-      .orLike(new RegExpBuilder().exactly(1).of("q"))
-      .orLike(new RegExpBuilder().exactly(1).of("r"))
+      .either(new RegExpBuilder().exactly(1).of("p"))
+      .or(new RegExpBuilder().exactly(1).of("q"))
+      .or(new RegExpBuilder().exactly(1).of("r"))
       .getRegExp();
     
     expect(regex.hasMatch("p"));

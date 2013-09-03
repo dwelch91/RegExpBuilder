@@ -124,17 +124,31 @@ class RegExpBuilder {
     return endOfInput();
   }
   
-  RegExpBuilder eitherLike(RegExpBuilder r) {
+  RegExpBuilder either(Dynamic r) {
+    if (r is String) {
+      return this._eitherLike(new RegExpBuilder().exactly(1).of(r));
+    }
+    else {
+      return this._eitherLike(r);
+    }
+  }
+  
+  RegExpBuilder _eitherLike(RegExpBuilder r) {
     _flushState();
     _either = r.getLiteral();
     return this;
   }
   
-  RegExpBuilder either(String s) {
-    return this.eitherLike(new RegExpBuilder().exactly(1).of(s));
+  RegExpBuilder or(Dynamic r) {
+    if (r is String) {
+      return this._orLike(new RegExpBuilder().exactly(1).of(r));
+    }
+    else {
+      return this._orLike(r);
+    }
   }
   
-  RegExpBuilder orLike(RegExpBuilder r) {
+  RegExpBuilder _orLike(RegExpBuilder r) {
     var either = _either;
     var or = r.getLiteral();
     if (either == "") {
@@ -147,10 +161,6 @@ class RegExpBuilder {
     }
     _clear();
     return this;
-  }
-  
-  RegExpBuilder or(String s) {
-    return this.orLike(new RegExpBuilder().exactly(1).of(s));
   }
   
   RegExpBuilder exactly(int n) {
@@ -240,8 +250,16 @@ class RegExpBuilder {
     return max(1).of(s);
   }
   
-  RegExpBuilder anything() {
+  RegExpBuilder something() {
     return min(1).ofAny();
+  }
+  
+  RegExpBuilder anything() {
+    return min(0).ofAny();
+  }
+  
+  RegExpBuilder any() {
+    return exactly(1).ofAny();
   }
   
   RegExpBuilder lineBreak() {
@@ -260,6 +278,14 @@ class RegExpBuilder {
     return this;
   }
   
+  RegExpBuilder notWhitespace() {
+    if (_min == -1 && _max == -1) {
+      return exactly(1).of("\S");
+    }
+    _like = "\S";
+    return this;
+  }
+  
   RegExpBuilder tab() {
     return exactly(1).of("\t");
   }
@@ -272,8 +298,16 @@ class RegExpBuilder {
     return exactly(1).of("\d");
   }
   
+  RegExpBuilder notDigit() {
+    return exactly(1).of("\D");
+  }
+  
   RegExpBuilder digits() {
     return like(new RegExpBuilder().digit());
+  }
+  
+  RegExpBuilder notDigits() {
+    return like(new RegExpBuilder().notDigit());
   }
   
   RegExpBuilder letter() {
@@ -282,8 +316,19 @@ class RegExpBuilder {
     return this;
   }
   
+  RegExpBuilder notLetter() {
+    exactly(1);
+    _notFrom = "A-Za-z";
+    return this;
+  }
+  
   RegExpBuilder letters() {
     _from = "A-Za-z";
+    return this;
+  }
+  
+  RegExpBuilder notLetters() {
+    _notFrom = "A-Za-z";
     return this;
   }
   
